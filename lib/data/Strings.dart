@@ -1,6 +1,12 @@
 import 'dart:io';
 
+import 'package:launch_review/launch_review.dart';
+
 class Strings {
+  static var iosFBBannerId;
+
+  static var iosFBInterstitialId;
+
   Strings._();
 
   static const accountName = "GJOneStudio";
@@ -53,6 +59,9 @@ class Strings {
   static String shareAppText =
       "Hey I have found this amazing app for you.\nHave a look on\n${Strings.appName}\n${Strings.appUrl}";
 
+static void RateNReview() {
+  LaunchReview.launch(iOSAppId: Strings.iosAppId);
+}
 
 }
 

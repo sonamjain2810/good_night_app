@@ -1,21 +1,16 @@
-// Ganesh Chaturathi Rakhi Game
-import 'package:good_night_app/utils/SizeConfig.dart';
-
 import 'package:flutter/material.dart';
-
-
+import '../utils/SizeConfig.dart';
 
 class CustomFullCard extends StatelessWidget {
   const CustomFullCard({
-    Key key,
-    @required this.size,
-    @required this.assetsImagePath,
-    this.ontap,
+    Key? key,
+    required this.size,
+    this.imageUrl,
   }) : super(key: key);
 
   final Size size;
-  final String assetsImagePath;
-  final Function ontap;
+  final String? imageUrl;
+
   @override
   Widget build(BuildContext context) {
     return InkWell(
@@ -31,10 +26,9 @@ class CustomFullCard extends StatelessWidget {
             borderRadius: BorderRadius.circular(10),
             image: DecorationImage(
               fit: BoxFit.cover,
-              image: AssetImage(assetsImagePath),
+              image: AssetImage(imageUrl!),
             )),
       ),
-      onTap: ontap,
     );
   }
 }

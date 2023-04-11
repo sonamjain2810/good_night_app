@@ -8,8 +8,8 @@ class AppTheme {
 
   // yaha per sab color define kiye hai jo hame ThemeData me use karege light Theme.
   static const Color _lightIconColor = Colors.grey;
-  static  Color _lightPrimaryColor = Colors.blueGrey[100];
-  static  Color _lightPrimaryVariantColor = Colors.blue[900] ;
+  static  Color? _lightPrimaryColor = Colors.blueGrey[100];
+  static  Color? _lightPrimaryVariantColor = Colors.blue[900] ;
   static const Color _lightSecondaryColor = Colors.grey;
   static const Color _lightOnPrimaryColor = Colors.black;
   static  Color _lightPrimaryIconThemeColor = Colors.purple;
@@ -25,7 +25,7 @@ class AppTheme {
 
   static Color _darkIconColor = Colors.white;
   static const Color _darkPrimaryColor = Colors.black;
-  static Color _darkPrimaryVariantColor = Colors.grey[800];
+  static Color? _darkPrimaryVariantColor = Colors.grey[800];
   static const Color _darkSecondaryColor = Colors.white;
   static const Color _darkOnPrimaryColor = Colors.white;
   static const Color _darkPrimaryIconThemeColor = Colors.red;
@@ -52,7 +52,7 @@ class AppTheme {
     ),
 
     colorScheme: ColorScheme.light(
-      primary: _lightPrimaryColor,
+      primary: _lightPrimaryColor!,
       primaryVariant: _lightPrimaryVariantColor,
       secondary: _lightSecondaryColor,
       onPrimary: _lightOnPrimaryColor,
@@ -78,8 +78,6 @@ class AppTheme {
 
     inputDecorationTheme: _lightInputDecorationTheme,
 
-    // cursor color
-    cursorColor: _lightPrimaryVariantColor,
 
   // Change circular progress bar color
     accentColor: _lightPrimaryVariantColor,
@@ -88,12 +86,12 @@ class AppTheme {
 
   static final InputDecorationTheme _lightInputDecorationTheme = InputDecorationTheme(
     enabledBorder: OutlineInputBorder(
-      borderSide: BorderSide(color: _lightPrimaryVariantColor),
+      borderSide: BorderSide(color: _lightPrimaryVariantColor!),
       borderRadius: BorderRadius.circular(20.0),
 
     ),
     focusedBorder: OutlineInputBorder(
-      borderSide: BorderSide(color: _lightPrimaryVariantColor),
+      borderSide: BorderSide(color: _lightPrimaryVariantColor!),
       ),
     hintStyle: GoogleFonts.ptSans(textStyle: _lightScreenBodyText1TextStyle),
     contentPadding: EdgeInsets.symmetric(horizontal: 16.0, vertical: 16.0),
@@ -220,18 +218,17 @@ class AppTheme {
 
     inputDecorationTheme: _darkInputDecorationTheme,
 
-    //cursor color
-    cursorColor: _darkPrimaryVariantColor
+  
 
   );
 
   static final InputDecorationTheme _darkInputDecorationTheme = InputDecorationTheme(
     enabledBorder: OutlineInputBorder(
-      borderSide: BorderSide(color: _darkPrimaryVariantColor),
+      borderSide: BorderSide(color: _darkPrimaryVariantColor!),
       borderRadius: BorderRadius.circular(20.0),
     ),
     focusedBorder: OutlineInputBorder(
-      borderSide: BorderSide(color: _darkPrimaryVariantColor),
+      borderSide: BorderSide(color: _darkPrimaryVariantColor!),
       ),
     hintStyle: GoogleFonts.ptSans(textStyle: _darkScreenBodyText1TextStyle),
     contentPadding: EdgeInsets.symmetric(horizontal: 16.0, vertical: 16.0),

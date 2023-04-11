@@ -6,22 +6,20 @@ import 'package:good_night_app/utils/SizeConfig.dart';
 
 class CustomGradientImageTextWidget extends StatelessWidget {
   const CustomGradientImageTextWidget({
-    Key key,
-    @required this.size,
-    @required this.isleft,
-    @required this.color1,
-    @required this.color2,
-    @required this.imageUrl,
-    @required this.title,
-    @required this.bodyText,
-    @required this.bottomText,
-    this.ontap,
+    Key? key,
+    required this.size,
+    required this.isleft,
+    required this.color1,
+    required this.color2,
+    required this.imageUrl,
+    required this.title,
+    required this.bodyText,
+    required this.bottomText,
   }) : super(key: key);
 
   final Size size;
   final Color color1, color2;
   final String imageUrl, title, bodyText, bottomText;
-  final Function ontap;
   final bool isleft;
   //"https://pngimg.com/uploads/ganesha/ganesha_PNG40.png"
 
@@ -112,7 +110,7 @@ class CustomGradientImageTextWidget extends StatelessWidget {
                 title,
                 style: Theme.of(context)
                     .textTheme
-                    .bodyText1
+                    .bodyText1!
                     .copyWith(color: Colors.white, fontWeight: FontWeight.bold),
                 maxLines: 2,
               ),
@@ -126,7 +124,7 @@ class CustomGradientImageTextWidget extends StatelessWidget {
                 bodyText,
                 style: Theme.of(context)
                     .textTheme
-                    .subtitle2
+                    .subtitle2!
                     .copyWith(color: Colors.white, fontWeight: FontWeight.bold),
               ),
             ),
@@ -139,14 +137,14 @@ class CustomGradientImageTextWidget extends StatelessWidget {
                 bottomText,
                 style: Theme.of(context)
                     .textTheme
-                    .subtitle1
+                    .subtitle1!
                     .copyWith(color: Colors.white, fontWeight: FontWeight.bold),
               ),
             ),
           ),
         ],
       ),
-      onTap: ontap,
+    
     );
   }
 }

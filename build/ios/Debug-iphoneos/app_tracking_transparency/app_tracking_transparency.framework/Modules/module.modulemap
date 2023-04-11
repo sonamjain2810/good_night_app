@@ -6,6 +6,6 @@ framework module app_tracking_transparency {
 }
 
 module app_tracking_transparency.Swift {
-    header "app_tracking_transparency-Swift.h"
-    requires objc
+  header "app_tracking_transparency-Swift.h"
+  requires objc
 }

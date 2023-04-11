@@ -7,7 +7,7 @@ import 'package:flutter/material.dart';
 class RatingWidget extends StatelessWidget {
   final String ratingText;
   const RatingWidget({
-    Key key, this.ratingText='1.0',
+    Key? key, this.ratingText='1.0',
   }) : super(key: key);
 
   @override

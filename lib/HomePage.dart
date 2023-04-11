@@ -4,6 +4,8 @@ import 'package:app_tracking_transparency/app_tracking_transparency.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/services.dart';
 import 'package:good_night_app/widgets/CustomGradientImageTextWidget.dart';
+import 'package:google_mobile_ads/google_mobile_ads.dart';
+import 'data/AdService.dart';
 import 'data/Images.dart';
 import 'data/Status.dart';
 import 'data/Strings.dart';
@@ -11,23 +13,12 @@ import 'widgets/CustomBannerWidget2.dart';
 import 'widgets/ImageTextHorizontalWidget2.dart';
 import 'widgets/QuotesDesign3.dart';
 import 'package:facebook_app_events/facebook_app_events.dart';
-import 'package:firebase_admob/firebase_admob.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_native_admob/native_admob_controller.dart';
-import 'StatusList.dart';
 import 'data/Gifs.dart';
 import 'widgets/CustomFullCard.dart';
 import 'package:url_launcher/url_launcher.dart';
-import 'QuotesList.dart';
 import 'utils/SizeConfig.dart';
-import 'AboutUs.dart';
-import 'GifsImages.dart';
-import 'ImagesList.dart';
-import 'MemeGenerator.dart';
-import 'MessagesList.dart';
 import 'MyDrawer.dart';
-import 'NativeAdContainer.dart';
-import 'ShayariList.dart';
 import 'widgets/CustomTextOnlyWidget.dart';
 
 // Height = 8.96
@@ -43,301 +34,78 @@ class HomePage extends StatefulWidget {
 class _HomePageState extends State<HomePage> {
   static final facebookAppEvents = FacebookAppEvents();
   String interstitialTag = "";
+ String _authStatus = 'Unknown';
 
-  // Native Ad Open
-  static String _adUnitID = Platform.isAndroid
-      ? Strings.androidAdmobNativeId
-      : Strings.iosAdmobNativeId;
-
-  final _nativeAdController = NativeAdmobController();
-  double _height = 0;
-
-  StreamSubscription _subscription;
-
-  String _authStatus = 'Unknown';
-
-
-//Native Ad Close
-  static const MobileAdTargetingInfo targetingInfo = MobileAdTargetingInfo(
-    testDevices:
-        Strings.testDevice != null ? <String>[Strings.testDevice] : null,
-    //keywords: Keywords.adsKeywords,
-    //contentUrl: 'http://foo.com/bar.html',
-    childDirected: false,
-    nonPersonalizedAds: true,
-  );
-
-  InterstitialAd _interstitialAd;
-
-  bool _isInterstitialAdReady = false;
-
-  InterstitialAd createInterstitialAd() {
-    return InterstitialAd(
-      adUnitId: Platform.isAndroid
-          ? Strings.androidAdmobInterstitialId
-          : Strings.iosAdmobInterstitialId,
-      targetingInfo: targetingInfo,
-      listener: (MobileAdEvent event) {
-        print("InterstitialAdId " + _interstitialAd.adUnitId);
-        print("InterstitialAd event $event");
-        if (event == MobileAdEvent.closed) {
-          _isInterstitialAdReady = false;
-
-          _interstitialAd = createInterstitialAd()..load();
-
-          if (interstitialTag != null) {
-            switch (interstitialTag) {
-              case "message":
-                Navigator.of(context).push(new MaterialPageRoute(
-                    builder: (BuildContext context) => MessagesList()));
-                break;
-              case "lang_english":
-                Navigator.of(context).push(new MaterialPageRoute(
-                    builder: (BuildContext context) =>
-                        MessagesList(type: "1")));
-                break;
-
-              case "lang_french":
-                Navigator.of(context).push(new MaterialPageRoute(
-                    builder: (BuildContext context) =>
-                        MessagesList(type: "2")));
-                break;
-
-              case "lang_german":
-                Navigator.of(context).push(new MaterialPageRoute(
-                    builder: (BuildContext context) =>
-                        MessagesList(type: "3")));
-                break;
-
-              case "lang_hindi":
-                Navigator.of(context).push(new MaterialPageRoute(
-                    builder: (BuildContext context) =>
-                        MessagesList(type: "4")));
-                break;
-
-              case "lang_italian":
-                Navigator.of(context).push(new MaterialPageRoute(
-                    builder: (BuildContext context) =>
-                        MessagesList(type: "5")));
-                break;
-
-              case "lang_portuguese":
-                Navigator.of(context).push(new MaterialPageRoute(
-                    builder: (BuildContext context) =>
-                        MessagesList(type: "6")));
-                break;
-
-              case "lang_spanish":
-                Navigator.of(context).push(new MaterialPageRoute(
-                    builder: (BuildContext context) =>
-                        MessagesList(type: "7")));
-                break;
-
-              case "gif":
-                Navigator.of(context).push(new MaterialPageRoute(
-                    builder: (BuildContext context) => GifsImages()));
-                break;
-
-              case "image":
-                Navigator.of(context).push(new MaterialPageRoute(
-                    builder: (BuildContext context) => ImagesList()));
-                break;
-
-              case "shayari":
-                Navigator.of(context).push(new MaterialPageRoute(
-                    builder: (BuildContext context) => ShayariList()));
-                break;
-
-              case "meme":
-                Navigator.of(context).push(new MaterialPageRoute(
-                    builder: (BuildContext context) => MemeGenerator()));
-                break;
-
-              case "about":
-                Navigator.of(context).push(new MaterialPageRoute(
-                    builder: (BuildContext context) => AboutUs()));
-                break;
-
-              case "status":
-                Navigator.of(context).push(new MaterialPageRoute(
-                    builder: (BuildContext context) => StatusList()));
-                break;
-
-              case "quotes":
-                Navigator.of(context).push(new MaterialPageRoute(
-                    builder: (BuildContext context) => QuotesList()));
-                break;
-              default:
-            }
-          }
-        } else if (event == MobileAdEvent.opened ||
-            event == MobileAdEvent.failedToLoad) {
-          _isInterstitialAdReady = false;
-
-          if (interstitialTag != null) {
-            switch (interstitialTag) {
-              case "message":
-                Navigator.of(context).push(new MaterialPageRoute(
-                    builder: (BuildContext context) => MessagesList()));
-                break;
-
-              case "lang_english":
-                Navigator.of(context).push(new MaterialPageRoute(
-                    builder: (BuildContext context) =>
-                        MessagesList(type: "1")));
-                break;
-
-              case "lang_french":
-                Navigator.of(context).push(new MaterialPageRoute(
-                    builder: (BuildContext context) =>
-                        MessagesList(type: "2")));
-                break;
-
-              case "lang_german":
-                Navigator.of(context).push(new MaterialPageRoute(
-                    builder: (BuildContext context) =>
-                        MessagesList(type: "3")));
-                break;
-
-              case "lang_hindi":
-                Navigator.of(context).push(new MaterialPageRoute(
-                    builder: (BuildContext context) =>
-                        MessagesList(type: "4")));
-                break;
-
-              case "lang_italian":
-                Navigator.of(context).push(new MaterialPageRoute(
-                    builder: (BuildContext context) =>
-                        MessagesList(type: "5")));
-                break;
-
-              case "lang_portuguese":
-                Navigator.of(context).push(new MaterialPageRoute(
-                    builder: (BuildContext context) =>
-                        MessagesList(type: "6")));
-                break;
-
-              case "lang_spanish":
-                Navigator.of(context).push(new MaterialPageRoute(
-                    builder: (BuildContext context) =>
-                        MessagesList(type: "7")));
-                break;
-
-              case "gif":
-                Navigator.of(context).push(new MaterialPageRoute(
-                    builder: (BuildContext context) => GifsImages()));
-                break;
-
-              case "image":
-                Navigator.of(context).push(new MaterialPageRoute(
-                    builder: (BuildContext context) => ImagesList()));
-                break;
-
-              case "shayari":
-                Navigator.of(context).push(new MaterialPageRoute(
-                    builder: (BuildContext context) => ShayariList()));
-                break;
-
-              case "meme":
-                Navigator.of(context).push(new MaterialPageRoute(
-                    builder: (BuildContext context) => MemeGenerator()));
-                break;
-
-              case "about":
-                Navigator.of(context).push(new MaterialPageRoute(
-                    builder: (BuildContext context) => AboutUs()));
-                break;
-
-              case "status":
-                Navigator.of(context).push(new MaterialPageRoute(
-                    builder: (BuildContext context) => StatusList()));
-                break;
-
-              case "quotes":
-                Navigator.of(context).push(new MaterialPageRoute(
-                    builder: (BuildContext context) => QuotesList()));
-                break;
-              default:
-            }
-          }
-        } else if (event == MobileAdEvent.loaded) {
-          _isInterstitialAdReady = true;
-        } else {
-          print("InterstitialAdId " + _interstitialAd.adUnitId);
-          print(event.toString());
-        }
-      },
-    );
-  }
+  late BannerAd bannerAd1, bannerAd2,bannerAd4;
+  bool isBannerAdLoaded = false;
 
   @override
   void initState() {
     super.initState();
-    FirebaseAdMob.instance.initialize(
-        appId: Platform.isAndroid
-            ? Strings.androidAdmobAppId
-            : Strings.iosAdmobAppId);
+    WidgetsBinding.instance.addPostFrameCallback((_) => initPlugin());
+    AdService.createInterstialAd();
 
-     initPlugin();
+    bannerAd1 = GetBannerAd();
+    bannerAd2 = GetBannerAd();
+    
+    bannerAd4 = GetBannerAd();
+  }
 
-    _interstitialAd?.dispose();
-    _interstitialAd = createInterstitialAd()..load();
-
-    //Native Ad
-    _subscription = _nativeAdController.stateChanged.listen(_onStateChanged);
-    _nativeAdController.setTestDeviceIds([Strings.testDevice]);
-
-    //
+  BannerAd GetBannerAd() {
+    return BannerAd(
+        size: AdSize.mediumRectangle,
+        adUnitId: Strings.iosAdmobBannerId,
+        listener: BannerAdListener(onAdLoaded: (_) {
+          setState(() {
+            isBannerAdLoaded = true;
+          });
+        }, onAdFailedToLoad: (ad, error) {
+          isBannerAdLoaded = true;
+          ad.dispose();
+        }),
+        request: AdRequest())
+      ..load();
   }
 
   @override
   void dispose() {
-    _interstitialAd?.dispose();
-    //Native Ad
-    _subscription.cancel();
-    _nativeAdController.dispose();
     super.dispose();
+    bannerAd1.dispose();
+    bannerAd2.dispose();
+    bannerAd4.dispose();
   }
 
   // Platform messages are asynchronous, so we initialize in an async method.
   Future<void> initPlugin() async {
-    TrackingStatus status;
     // Platform messages may fail, so we use a try/catch PlatformException.
     try {
-      status = await AppTrackingTransparency.requestTrackingAuthorization();
+      final TrackingStatus status =
+          await AppTrackingTransparency.requestTrackingAuthorization();
+
+      switch (status) {
+        case TrackingStatus.authorized:
+          print("Tracking Status Authorized");
+          break;
+        case TrackingStatus.denied:
+          print("Tracking Status Denied");
+          break;
+        case TrackingStatus.notDetermined:
+          print("Tracking Status not Determined");
+          break;
+        case TrackingStatus.notSupported:
+          print("Tracking Status not Supported");
+          break;
+        case TrackingStatus.restricted:
+          print("Tracking Status Restricted");
+          break;
+        default:
+      }
     } on PlatformException {
-      _authStatus = 'Failed to open tracking auth dialog.';
+      setState(() => _authStatus = 'PlatformException was thrown');
     }
 
     final uuid = await AppTrackingTransparency.getAdvertisingIdentifier();
     print("UUID: $uuid");
-
-    if (!mounted) {
-      return;
-    }
-
-    setState(() {
-      _authStatus = "$status";
-    });
-  }
-
-  void _onStateChanged(AdLoadState state) {
-    switch (state) {
-      case AdLoadState.loading:
-        setState(() {
-          _height = 0;
-        });
-        break;
-
-      case AdLoadState.loadCompleted:
-        setState(() {
-          _height = 36.83 * SizeConfig.heightMultiplier;
-        });
-        break;
-
-      default:
-        break;
-    }
   }
 
   @override
@@ -347,7 +115,7 @@ class _HomePageState extends State<HomePage> {
       appBar: AppBar(
         title: Text(
           "Home",
-          style: Theme.of(context).appBarTheme.textTheme.headline1,
+          style: Theme.of(context).appBarTheme.textTheme!.headline1,
         ),
       ),
       body: SafeArea(
@@ -377,7 +145,7 @@ class _HomePageState extends State<HomePage> {
                           child: Text("Best Good Night 'Status'",
                               style: Theme.of(context)
                                   .textTheme
-                                  .headline1
+                                  .headline1!
                                   .copyWith(color: Colors.white)),
                         ),
                         Padding(
@@ -396,7 +164,7 @@ class _HomePageState extends State<HomePage> {
                                     color2: Colors.pink,
                                     isleft: false,
                                     imageUrl: Gifs.gifs_path[20],
-                                    ontap: null,
+                                    
                                   ),
                                   CustomGradientImageTextWidget(
                                     size: size,
@@ -407,7 +175,7 @@ class _HomePageState extends State<HomePage> {
                                     color2: Colors.indigo,
                                     isleft: false,
                                     imageUrl: Gifs.gifs_path[31],
-                                    ontap: null,
+                                    
                                   ),
                                   CustomGradientImageTextWidget(
                                     size: size,
@@ -418,7 +186,7 @@ class _HomePageState extends State<HomePage> {
                                     color2: Colors.deepPurpleAccent,
                                     isleft: false,
                                     imageUrl: Gifs.gifs_path[33],
-                                    ontap: null,
+                                    
                                   ),
                                 ],
                               ),
@@ -431,12 +199,9 @@ class _HomePageState extends State<HomePage> {
                                     'button_id': 'Status_button',
                                   },
                                 );
-                                _isInterstitialAdReady == true
-                                    ? _interstitialAd?.show()
-                                    : Navigator.of(context).push(
-                                        new MaterialPageRoute(
-                                            builder: (BuildContext context) =>
-                                                StatusList()));
+                                AdService.context = context;
+                                AdService.interstitialTag = "status";
+                                AdService.showInterstitialAd();
                               },
                             ),
                           ),
@@ -458,7 +223,7 @@ class _HomePageState extends State<HomePage> {
                             child: Text("Select Wishes & Messages Language:",
                                 style: Theme.of(context)
                                     .textTheme
-                                    .headline1
+                                    .headline1!
                                     .copyWith(color: Colors.white)),
                           ),
                         ),
@@ -469,175 +234,177 @@ class _HomePageState extends State<HomePage> {
                           padding: EdgeInsets.all(SizeConfig.width(8.0)),
                           child: Row(
                             children: [
-                              CustomTextOnlyWidget(
-                                size: size,
-                                borderColor: Colors.blue[900],
-                                headingText: "English",
-                                text:
-                                    "No need to be upset or feel lonely tonight. Feel the calmness of this night with all your heart. Relax and have a tight sleep. Good night.",
-                                color: Colors.amberAccent,
-                                ontap: () {
-                                  print("Language English Clicked");
-                                  interstitialTag = "lang_english";
-                                  facebookAppEvents.logEvent(
-                                    name: "Message List",
-                                    parameters: {
-                                      'button_id': 'lang_english_button',
-                                    },
-                                  );
-                                  _isInterstitialAdReady == true
-                                      ? _interstitialAd?.show()
-                                      : Navigator.of(context).push(
-                                          new MaterialPageRoute(
-                                              builder: (BuildContext context) =>
-                                                  MessagesList(type: "1")));
-                                },
-                              ),
-                              CustomTextOnlyWidget(
-                                size: size,
-                                borderColor: Colors.blue[900],
-                                headingText: "हिन्दी",
-                                text:
-                                    "ऐसा लगता है कुछ होने जा रहा है\nकोई मीठे सपनो में खोने जा रहा है\nधीमी कर दे अपनी रोशनी ऐ चाँद\nमेरा कोई अपना सोने जा रहा है\nगुड नाईट\nशुभ रात्रि!",
-                                color: Colors.amberAccent,
-                                ontap: () {
-                                  print("Hindi Clicked");
-                                  interstitialTag = "lang_hindi";
-                                  facebookAppEvents.logEvent(
-                                    name: "Message List",
-                                    parameters: {
-                                      'button_id': 'lang_hindi_button',
-                                    },
-                                  );
-                                  _isInterstitialAdReady == true
-                                      ? _interstitialAd?.show()
-                                      : Navigator.of(context).push(
-                                          new MaterialPageRoute(
-                                              builder: (BuildContext context) =>
-                                                  MessagesList(type: "4")));
-                                },
-                              ),
-                              CustomTextOnlyWidget(
-                                size: size,
-                                borderColor: Colors.blue[900],
-                                headingText: "Deutsche",
-                                text:
-                                    "Ich sende dir eine Wolke, die dich zudeckt, einen Stern,der Dir die Nacht erhellt, den Mond der Dich bewacht süsse Träume und Gute Nacht!",
-                                color: Colors.amberAccent,
-                                ontap: () {
-                                  print("German Clicked");
-                                  interstitialTag = "lang_german";
-                                  facebookAppEvents.logEvent(
-                                    name: "Message List",
-                                    parameters: {
-                                      'button_id': 'lang_german_button',
-                                    },
-                                  );
-                                  _isInterstitialAdReady == true
-                                      ? _interstitialAd?.show()
-                                      : Navigator.of(context).push(
-                                          new MaterialPageRoute(
-                                              builder: (BuildContext context) =>
-                                                  MessagesList(type: "3")));
-                                },
-                              ),
-                              CustomTextOnlyWidget(
+                              InkWell(
+                                child: CustomTextOnlyWidget(
                                   size: size,
-                                  borderColor: Colors.blue[900],
-                                  headingText: "français",
                                   text:
-                                      "Quand la nuit se pose, quand les choses se reposent, quand les paupières se closent, comme une rose qui se replie, j’aime ce moment où je te dis avec amour BONNE NUIT",
+                                      "No need to be upset or feel lonely tonight. Feel the calmness of this night with all your heart. Relax and have a tight sleep. Good night.",
                                   color: Colors.amberAccent,
-                                  ontap: () {
-                                    print("français Clicked");
-                                    interstitialTag = "lang_french";
+                                  language: "English",
+                                  ),
+                                  onTap: (() {
+                                    print("English Message Clicked");
+                                    interstitialTag = "lang_english";
                                     facebookAppEvents.logEvent(
                                       name: "Message List",
                                       parameters: {
-                                        'button_id': 'lang_french_button',
+                                        'button_id': 'lang_english_button',
                                       },
                                     );
-                                    _isInterstitialAdReady == true
-                                        ? _interstitialAd?.show()
-                                        : Navigator.of(context).push(
-                                            new MaterialPageRoute(
-                                                builder: (BuildContext
-                                                        context) =>
-                                                    MessagesList(type: "2")));
-                                  }),
-                              CustomTextOnlyWidget(
-                                size: size,
-                                borderColor: Colors.blue[900],
-                                headingText: "Italiano",
-                                text:
-                                    "I miracoli sono dappertutto…. i miracoli sono altruismo, affetto, amore… i miracoli sono piccole gioie di ogni giorno, quelle chiuse nei gesti quotidiani… Chiudi gli occhi e pensa che anche tu sei un meraviglioso Miracolo! Buonanotte",
-                                color: Colors.amberAccent,
-                                ontap: () {
-                                  print("Italian Clicked");
-                                  interstitialTag = "lang_italian";
-                                  facebookAppEvents.logEvent(
-                                    name: "Message List",
-                                    parameters: {
-                                      'button_id': 'lang_italian_button',
-                                    },
-                                  );
-                                  _isInterstitialAdReady == true
-                                      ? _interstitialAd?.show()
-                                      : Navigator.of(context).push(
-                                          new MaterialPageRoute(
-                                              builder: (BuildContext context) =>
-                                                  MessagesList(type: "5")));
-                                },
+                                    AdService.context = context;
+                                    AdService.interstitialTag =
+                                        "lang_english";
+                                    AdService.showInterstitialAd();
+                                  }
+                              )),
+                              InkWell(
+                                child: CustomTextOnlyWidget(
+                                  size: size,
+                                  
+                                  text:
+                                      "ऐसा लगता है कुछ होने जा रहा है\nकोई मीठे सपनो में खोने जा रहा है\nधीमी कर दे अपनी रोशनी ऐ चाँद\nमेरा कोई अपना सोने जा रहा है\nगुड नाईट\nशुभ रात्रि!",
+                                  color: Colors.amberAccent,
+                                  language: "हिन्दी"
+                                 ),
+                                 onTap: () {
+                                          print("Hindi Clicked");
+                                          interstitialTag = "lang_hindi";
+                                          facebookAppEvents.logEvent(
+                                            name: "Message List",
+                                            parameters: {
+                                              'button_id': 'lang_hindi_button',
+                                            },
+                                          );
+                                          AdService.context = context;
+                                          AdService.interstitialTag =
+                                              "lang_hindi";
+                                          AdService.showInterstitialAd();
+                                        },
                               ),
-                              CustomTextOnlyWidget(
-                                size: size,
-                                borderColor: Colors.blue[900],
-                                headingText: "Português",
-                                text:
-                                    "Que Deus dê descanso para o teu corpo e alívio para a tua alma, para que você possa enfrentar o amanhã com um sorriso no rosto.\n Boa noite!",
-                                color: Colors.amberAccent,
-                                ontap: () {
-                                  print("Portuguese Clicked");
-                                  interstitialTag = "lang_portuguese";
-                                  facebookAppEvents.logEvent(
-                                    name: "Message List",
-                                    parameters: {
-                                      'button_id': 'lang_portuguese_button',
-                                    },
-                                  );
-                                  _isInterstitialAdReady == true
-                                      ? _interstitialAd?.show()
-                                      : Navigator.of(context).push(
-                                          new MaterialPageRoute(
-                                              builder: (BuildContext context) =>
-                                                  MessagesList(type: "6")));
-                                },
+                              InkWell(
+                                child: CustomTextOnlyWidget(
+                                  size: size,
+                                  text:
+                                      "Ich sende dir eine Wolke, die dich zudeckt, einen Stern,der Dir die Nacht erhellt, den Mond der Dich bewacht süsse Träume und Gute Nacht!",
+                                  color: Colors.amberAccent,
+                                  language: "Deutsche"
+                                  ),
+                                  onTap: (){
+                                    print("German Clicked");
+                                          interstitialTag = "lang_german";
+                                          facebookAppEvents.logEvent(
+                                            name: "Message List",
+                                            parameters: {
+                                              'button_id': 'lang_german_button',
+                                            },
+                                          );
+                                          AdService.context = context;
+                                          AdService.interstitialTag =
+                                              "lang_german";
+                                          AdService.showInterstitialAd();
+                                  },
                               ),
-                              CustomTextOnlyWidget(
-                                size: size,
-                                borderColor: Colors.blue[900],
-                                headingText: "Español",
-                                text:
-                                    "Recuerda que los sueños siempre se hacen realidad, si lo dudas, mírate eres mi sueño hecho realidad. Que descanses y buenas noches amor.",
-                                color: Colors.amberAccent,
-                                ontap: () {
-                                  print("For All Clicked");
-                                  interstitialTag = "lang_spanish";
-                                  facebookAppEvents.logEvent(
-                                    name: "Message List",
-                                    parameters: {
-                                      'button_id': 'lang_spanish_button',
-                                    },
-                                  );
-                                  _isInterstitialAdReady == true
-                                      ? _interstitialAd?.show()
-                                      : Navigator.of(context).push(
-                                          new MaterialPageRoute(
-                                              builder: (BuildContext context) =>
-                                                  MessagesList(type: "7")));
-                                },
+                              InkWell(
+                                child: CustomTextOnlyWidget(
+                                    size: size,
+                                    
+                                    text:
+                                        "Quand la nuit se pose, quand les choses se reposent, quand les paupières se closent, comme une rose qui se replie, j’aime ce moment où je te dis avec amour BONNE NUIT",
+                                    color: Colors.amberAccent,
+                                    language: "français"
+                                    ),
+                                    onTap: () {
+                                            print("français Clicked");
+                                            interstitialTag = "lang_french";
+                                            facebookAppEvents.logEvent(
+                                              name: "Message List",
+                                              parameters: {
+                                                'button_id':
+                                                    'lang_french_button',
+                                              },
+                                            );
+                                            AdService.context = context;
+                                            AdService.interstitialTag =
+                                                "lang_french";
+                                            AdService.showInterstitialAd();
+                                          }
                               ),
-                            ],
+                              InkWell(
+                                child: CustomTextOnlyWidget(
+                                  size: size,
+                                  
+                                  text:
+                                      "I miracoli sono dappertutto…. i miracoli sono altruismo, affetto, amore… i miracoli sono piccole gioie di ogni giorno, quelle chiuse nei gesti quotidiani… Chiudi gli occhi e pensa che anche tu sei un meraviglioso Miracolo! Buonanotte",
+                                  color: Colors.amberAccent,
+                                  language: "Italiano"
+                                 ),
+                                 onTap: () {
+                                          print("Italian Clicked");
+                                          interstitialTag = "lang_italian";
+                                          facebookAppEvents.logEvent(
+                                            name: "Message List",
+                                            parameters: {
+                                              'button_id':
+                                                  'lang_italian_button',
+                                            },
+                                          );
+                                          AdService.context = context;
+                                          AdService.interstitialTag =
+                                              "lang_italian";
+                                          AdService.showInterstitialAd();
+                                        },
+                              ),
+                              InkWell(
+                                child: CustomTextOnlyWidget(
+                                  size: size,
+                                  text:
+                                      "Que Deus dê descanso para o teu corpo e alívio para a tua alma, para que você possa enfrentar o amanhã com um sorriso no rosto.\n Boa noite!",
+                                  color: Colors.amberAccent,
+                                  language: "Português"
+                                  ),
+                                  onTap: () {
+                                          print("Portuguese Clicked");
+                                          interstitialTag = "lang_portuguese";
+                                          facebookAppEvents.logEvent(
+                                            name: "Message List",
+                                            parameters: {
+                                              'button_id':
+                                                  'lang_portuguese_button',
+                                            },
+                                          );
+                                          AdService.context = context;
+                                          AdService.interstitialTag =
+                                              "lang_portuguese";
+                                          AdService.showInterstitialAd();
+                                  }
+                              ),
+                              InkWell(
+                                child: CustomTextOnlyWidget(
+                                  size: size,
+                                  
+                                  text:
+                                      "Recuerda que los sueños siempre se hacen realidad, si lo dudas, mírate eres mi sueño hecho realidad. Que descanses y buenas noches amor.",
+                                  color: Colors.amberAccent,
+                                  language: "Español"
+                                  ),
+                                  onTap: () {
+                                          print("For All Clicked");
+                                          interstitialTag = "lang_spanish";
+                                          facebookAppEvents.logEvent(
+                                            name: "Message List",
+                                            parameters: {
+                                              'button_id':
+                                                  'lang_spanish_button',
+                                            },
+                                          );
+                                          AdService.context = context;
+                                          AdService.interstitialTag =
+                                              "lang_spanish";
+                                          AdService.showInterstitialAd();
+                                        },
+                              ),
+                            
+                              ],
                           ),
                         ),
                       ),
@@ -650,11 +417,10 @@ class _HomePageState extends State<HomePage> {
                   //Native Ad
                   DesignerContainer(
                     isLeft: false,
-                    child: NativeAdContainer(
-                      height: _height,
-                      adUnitID: _adUnitID,
-                      nativeAdController: _nativeAdController,
-                      numberAds: 4,
+                    child: Container(
+                      height: bannerAd1.size.height.toDouble(),
+                      width: bannerAd1.size.width.toDouble(),
+                      child: AdWidget(ad: bannerAd1),
                     ),
                   ),
 
@@ -669,7 +435,7 @@ class _HomePageState extends State<HomePage> {
                           child: Text("Explore Gifs",
                               style: Theme.of(context)
                                   .textTheme
-                                  .headline1
+                                  .headline1!
                                   .copyWith(color: Colors.white)),
                         ),
                         Padding(
@@ -687,19 +453,16 @@ class _HomePageState extends State<HomePage> {
                             ),
                             onTap: () {
                               print("Gifs Clicked");
-                              interstitialTag = "gif";
-                              facebookAppEvents.logEvent(
-                                name: "GIF List",
-                                parameters: {
-                                  'button_id': 'gif_button',
-                                },
-                              );
-                              _isInterstitialAdReady == true
-                                  ? _interstitialAd?.show()
-                                  : Navigator.of(context).push(
-                                      new MaterialPageRoute(
-                                          builder: (BuildContext context) =>
-                                              ShayariList()));
+                                interstitialTag = "gif";
+                                facebookAppEvents.logEvent(
+                                  name: "GIF List",
+                                  parameters: {
+                                    'button_id': 'gif_button',
+                                  },
+                                );
+                                AdService.context = context;
+                                AdService.interstitialTag = "gif";
+                                AdService.showInterstitialAd();
                             },
                           ),
                         ),
@@ -722,7 +485,7 @@ class _HomePageState extends State<HomePage> {
                               Text("Good Night Quotes",
                                   style: Theme.of(context)
                                       .textTheme
-                                      .headline1
+                                      .headline1!
                                       .copyWith(color: Colors.white)),
                             ],
                           ),
@@ -743,7 +506,7 @@ class _HomePageState extends State<HomePage> {
                                         "“Good night, good night! Parting is such sweet sorrow that, I shall say good night till it be morrow.”",
                                     footerText: " ~ William Shakespeare",
                                     curvedBorder: true,
-                                    ontap: null),
+                                    ),
                                 SizedBox(width: SizeConfig.width(8)),
                                 QuotesDesign3(
                                     size: size,
@@ -752,17 +515,16 @@ class _HomePageState extends State<HomePage> {
                                         "“May I kiss you then? On this miserable paper? I might as well open the window and kiss the night air.” – Franz Kafka",
                                     footerText: " ~ Franz Kafka",
                                     curvedBorder: true,
-                                    ontap: null),
+                                    ),
                                 SizedBox(width: SizeConfig.width(8)),
                                 QuotesDesign3(
                                     size: size,
                                     color: Colors.amberAccent,
-                                    borderColor: Colors.redAccent,
                                     bodyText:
                                         "“Night is always darker before the dawn and life is the same, the hard times will pass, every thing will get better and sun will shine brighter then ever.”",
                                     footerText: " ~ Ernest Hemingway",
                                     curvedBorder: true,
-                                    ontap: null),
+                                    ),
                               ],
                             ),
                             onTap: () {
@@ -774,12 +536,9 @@ class _HomePageState extends State<HomePage> {
                                   'button_id': 'Quotes_button',
                                 },
                               );
-                              _isInterstitialAdReady == true
-                                  ? _interstitialAd?.show()
-                                  : Navigator.of(context).push(
-                                      new MaterialPageRoute(
-                                          builder: (BuildContext context) =>
-                                              QuotesList()));
+                              AdService.context = context;
+                              AdService.interstitialTag = "quotes";
+                              AdService.showInterstitialAd();
                             },
                           ),
                         ),
@@ -789,66 +548,6 @@ class _HomePageState extends State<HomePage> {
                   // Quotes end
 
                   Divider(),
-
-                  //Native Ad
-                  DesignerContainer(
-                    isLeft: true,
-                    child: NativeAdContainer(
-                      height: _height,
-                      adUnitID: _adUnitID,
-                      nativeAdController: _nativeAdController,
-                      numberAds: 4,
-                    ),
-                  ),
-
-                  Divider(),
-                  // Shayari Start
-                  DesignerContainer(
-                    isLeft: false,
-                    child: Column(
-                      children: [
-                        Padding(
-                          padding: EdgeInsets.all(SizeConfig.width(8)),
-                          child: Text("Good Night Shayari",
-                              style: Theme.of(context)
-                                  .textTheme
-                                  .headline1
-                                  .copyWith(color: Colors.white)),
-                        ),
-                        Padding(
-                            padding: EdgeInsets.all(SizeConfig.width(8)),
-                            child: CustomBannerWidget2(
-                              size: size,
-                              imagePath: Images.images_path[1],
-                              topText: "Best Latest Shayari",
-                              middleText:
-                                  "हर रात आपकी चारों तरफ उजाला हो,\nऔर हर रात आपसे कोई गुड नाईट कहने वाला हो।",
-                              bottomText: "in Hindi Font",
-                              buttonText: "Explore Now",
-                              ontap: () {
-                                print("Shayari Clicked");
-                                interstitialTag = "shayari";
-                                facebookAppEvents.logEvent(
-                                  name: "Shayari List",
-                                  parameters: {
-                                    'button_id': 'Shayari_button',
-                                  },
-                                );
-                                _isInterstitialAdReady == true
-                                    ? _interstitialAd?.show()
-                                    : Navigator.of(context).push(
-                                        new MaterialPageRoute(
-                                            builder: (BuildContext context) =>
-                                                ShayariList()));
-                              },
-                            )),
-                      ],
-                    ),
-                  ),
-                  // Shayari End
-
-                  Divider(),
-
                   //Image Start
 
                   Column(
@@ -863,7 +562,7 @@ class _HomePageState extends State<HomePage> {
                               Text("Explore Images",
                                   style: Theme.of(context)
                                       .textTheme
-                                      .headline1
+                                      .headline1!
                                       .copyWith(color: Colors.white)),
                             ],
                           ),
@@ -885,20 +584,16 @@ class _HomePageState extends State<HomePage> {
                           ),
                           onTap: () {
                             print("Images Clicked");
-                            interstitialTag = "image";
-                            facebookAppEvents.logEvent(
-                              name: "Image List",
-                              parameters: {
-                                'button_id': 'Image_button',
-                              },
-                            );
-
-                            _isInterstitialAdReady == true
-                                ? _interstitialAd?.show()
-                                : Navigator.of(context).push(
-                                    new MaterialPageRoute(
-                                        builder: (BuildContext context) =>
-                                            ImagesList()));
+                                interstitialTag = "image";
+                                facebookAppEvents.logEvent(
+                                  name: "Image List",
+                                  parameters: {
+                                    'button_id': 'Image_button',
+                                  },
+                                );
+                                AdService.context = context;
+                                AdService.interstitialTag = "image";
+                                AdService.showInterstitialAd();
                           },
                         ),
                       ),
@@ -906,19 +601,71 @@ class _HomePageState extends State<HomePage> {
                   ),
                   // Image End
 
+                  
+
                   Divider(),
+
                   //Native Ad
                   DesignerContainer(
-                    isLeft: false,
-                    child: NativeAdContainer(
-                      height: _height,
-                      adUnitID: _adUnitID,
-                      nativeAdController: _nativeAdController,
-                      numberAds: 4,
+                    isLeft: true,
+                    child: Container(
+                      height: bannerAd2.size.height.toDouble(),
+                      width: bannerAd2.size.width.toDouble(),
+                      child: AdWidget(ad: bannerAd2),
                     ),
                   ),
 
                   Divider(),
+                  // Shayari Start
+                  DesignerContainer(
+                    isLeft: false,
+                    child: Column(
+                      children: [
+                        Padding(
+                          padding: EdgeInsets.all(SizeConfig.width(8)),
+                          child: Text("Good Night Shayari",
+                              style: Theme.of(context)
+                                  .textTheme
+                                  .headline1!
+                                  .copyWith(color: Colors.white)),
+                        ),
+                        Padding(
+                            padding: EdgeInsets.all(SizeConfig.width(8)),
+                            child: InkWell
+                            (
+                              child: CustomBannerWidget2(
+                                size: size,
+                                imagePath: Images.images_path[1],
+                                topText: "Best Latest Shayari",
+                                middleText:
+                                    "हर रात आपकी चारों तरफ उजाला हो,\nऔर हर रात आपसे कोई गुड नाईट कहने वाला हो।",
+                                bottomText: "in Hindi Font",
+                                buttonText: "Explore Now",
+                                
+                              ),
+                              onTap: (() {
+                                print("Shayari Clicked");
+                              interstitialTag = "shayari";
+                              facebookAppEvents.logEvent(
+                                name: "Shayari List",
+                                parameters: {
+                                  'button_id': 'Shayari_button',
+                                },
+                              );
+                              AdService.context = context;
+                              AdService.interstitialTag = "shayari";
+                              AdService.showInterstitialAd();
+                              }),
+                            ),
+                            ),
+                      ],
+                    ),
+                  ),
+                  // Shayari End
+
+                  Divider(),
+
+                  
 
                   // Wish Creator Start
                   Column(
@@ -933,7 +680,7 @@ class _HomePageState extends State<HomePage> {
                               Text("Create Good Night Meme & e-Card ",
                                   style: Theme.of(context)
                                       .textTheme
-                                      .headline1
+                                      .headline1!
                                       .copyWith(color: Colors.white)),
                             ],
                           ),
@@ -941,28 +688,28 @@ class _HomePageState extends State<HomePage> {
                       ),
                       Padding(
                         padding: EdgeInsets.all(SizeConfig.width(8)),
-                        child: CustomBannerWidget2(
-                          size: MediaQuery.of(context).size,
-                          imagePath: Gifs.gifs_path[7],
-                          buttonText: "Try It",
-                          topText: "Send Good Night Card",
-                          middleText: "Create It Now.",
-                          bottomText: "Share It With Your Friends",
-                          ontap: () {
-                            print("Meme Clicked");
-                            interstitialTag = "meme";
-                            facebookAppEvents.logEvent(
-                              name: "Meme Generator",
-                              parameters: {
-                                'button_id': 'meme_button',
-                              },
-                            );
-                            _isInterstitialAdReady == true
-                                ? _interstitialAd?.show()
-                                : Navigator.of(context).push(
-                                    new MaterialPageRoute(
-                                        builder: (BuildContext context) =>
-                                            MemeGenerator()));
+                        child: InkWell(
+                          child: CustomBannerWidget2(
+                            size: MediaQuery.of(context).size,
+                            imagePath: Gifs.gifs_path[7],
+                            buttonText: "Try It",
+                            topText: "Send Good Night Card",
+                            middleText: "Create It Now.",
+                            bottomText: "Share It With Your Friends",
+                            
+                          ),
+                          onTap: () {
+                            print("meme Clicked");
+                              interstitialTag = "meme";
+                              facebookAppEvents.logEvent(
+                                name: "meme",
+                                parameters: {
+                                  'button_id': 'Meme_button',
+                                },
+                              );
+                              AdService.context = context;
+                              AdService.interstitialTag = "meme";
+                              AdService.showInterstitialAd();
                           },
                         ),
                       ),
@@ -973,11 +720,11 @@ class _HomePageState extends State<HomePage> {
                   //Native Ad
                   DesignerContainer(
                     isLeft: true,
-                    child: NativeAdContainer(
-                      height: _height,
-                      adUnitID: _adUnitID,
-                      nativeAdController: _nativeAdController,
-                      numberAds: 4,
+                    child: Container(
+                      height: bannerAd4.size.height.toDouble(),
+                      width: bannerAd4.size.width.toDouble(),
+                      child: AdWidget(ad: bannerAd4),
+                    
                     ),
                   ),
 
@@ -992,34 +739,34 @@ class _HomePageState extends State<HomePage> {
                           child: Text("Play Game \"Sell Rakhi\"",
                               style: Theme.of(context)
                                   .textTheme
-                                  .headline1
+                                  .headline1!
                                   .copyWith(color: Colors.white)),
                         ),
-                        CustomFullCard(
-                          size: MediaQuery.of(context).size,
-                          assetsImagePath: "assets/rakhi_game.jpeg",
-                          ontap: () {
-                            if (Platform.isAndroid) {
-                              // Android-specific code
-                              print("More Button Clicked");
-                              launch(
-                                  "https://play.google.com/store/apps/developer?id=Festival+Messages+SMS");
-                            } else if (Platform.isIOS) {
-                              // iOS-specific code
-                              print("More Button Clicked");
-                              launch(
-                                  "https://apps.apple.com/us/app/-/id1434054710");
+                        InkWell(
+                    child: CustomFullCard(
+                      size: MediaQuery.of(context).size,
+                      imageUrl: "lib/assets/rakhi_game.jpeg",
+                    ),
+                    onTap: () {
+                      if (Platform.isAndroid) {
+                        // Android-specific code
+                        print("More Button Clicked");
+                        launch(
+                            "https://play.google.com/store/apps/developer?id=Festival+Messages+SMS");
+                      } else if (Platform.isIOS) {
+                        // iOS-specific code
+                        print("More Button Clicked");
+                        launch("https://apps.apple.com/us/app/-/id1434054710");
 
-                              facebookAppEvents.logEvent(
-                                name: "Play Rakshabandhan Game",
-                                parameters: {
-                                  'clicked_on_play_rakshabandhan_game': 'Yes',
-                                },
-                              );
-                            }
+                        facebookAppEvents.logEvent(
+                          name: "Play Rakshabandhan Game",
+                          parameters: {
+                            'clicked_on_play_rakshabandhan_game': 'Yes',
                           },
-                        ),
-                      ],
+                        );
+                      }
+                    },
+                  ),],
                     ),
                   ),
 
@@ -1167,83 +914,80 @@ class _HomePageState extends State<HomePage> {
 
 class QuotesDesign1 extends StatelessWidget {
   const QuotesDesign1({
-    Key key,
-    @required this.size,
-    @required this.color,
-    @required this.bodyText,
-    @required this.footerText,
-    this.ontap,
+    Key? key,
+    required this.size,
+    required this.color,
+    required this.bodyText,
+    required this.footerText,
+    
   }) : super(key: key);
 
   final Color color;
   final String bodyText, footerText;
   final Size size;
-  final Function ontap;
 
   @override
   Widget build(BuildContext context) {
-    return InkWell(
-        child: Container(
-          width: size.width - SizeConfig.width(16),
-          height: size.width / 2,
-          decoration: BoxDecoration(
-            color: color,
-            borderRadius: BorderRadius.only(
-              bottomLeft: Radius.circular(SizeConfig.height(20)),
-              topRight: Radius.circular(SizeConfig.height(20)),
-            ),
-            boxShadow: [
-              BoxShadow(
-                  offset: Offset(0, 0), blurRadius: 4, color: Colors.grey),
-            ],
-          ),
-          child: Stack(
-            children: [
-              Icon(Icons.format_quote,
-                  color: Theme.of(context).primaryIconTheme.color),
-              Positioned(
-                top: 20,
-                width: size.width - SizeConfig.width(16),
-                child: Center(
-                  child: Padding(
-                    padding: EdgeInsets.all(SizeConfig.width(8)),
-                    child: Text(
-                      bodyText,
-                      style: Theme.of(context).textTheme.bodyText1,
-                      textAlign: TextAlign.center,
-                    ),
-                  ),
-                ),
-              ),
-              Positioned(
-                left: 0,
-                bottom: 0,
-                right: 0,
-                child: Center(
-                  child: Padding(
-                    padding: EdgeInsets.all(SizeConfig.width(8)),
-                    child: Text(
-                      footerText,
-                      style: Theme.of(context).textTheme.bodyText1.copyWith(
-                            color: Theme.of(context).primaryIconTheme.color,
-                            fontWeight: FontWeight.bold,
-                          ),
-                    ),
-                  ),
-                ),
-              ),
-            ],
-          ),
+    return Container(
+      width: size.width - SizeConfig.width(16),
+      height: size.width / 2,
+      decoration: BoxDecoration(
+        color: color,
+        borderRadius: BorderRadius.only(
+          bottomLeft: Radius.circular(SizeConfig.height(20)),
+          topRight: Radius.circular(SizeConfig.height(20)),
         ),
-        onTap: ontap);
+        boxShadow: [
+          BoxShadow(
+              offset: Offset(0, 0), blurRadius: 4, color: Colors.grey),
+        ],
+      ),
+      child: Stack(
+        children: [
+          Icon(Icons.format_quote,
+              color: Theme.of(context).primaryIconTheme.color),
+          Positioned(
+            top: 20,
+            width: size.width - SizeConfig.width(16),
+            child: Center(
+              child: Padding(
+                padding: EdgeInsets.all(SizeConfig.width(8)),
+                child: Text(
+                  bodyText,
+                  style: Theme.of(context).textTheme.bodyText1,
+                  textAlign: TextAlign.center,
+                ),
+              ),
+            ),
+          ),
+          Positioned(
+            left: 0,
+            bottom: 0,
+            right: 0,
+            child: Center(
+              child: Padding(
+                padding: EdgeInsets.all(SizeConfig.width(8)),
+                child: Text(
+                  footerText,
+                  style: Theme.of(context).textTheme.bodyText1!.copyWith(
+                        color: Theme.of(context).primaryIconTheme.color,
+                        fontWeight: FontWeight.bold,
+                      ),
+                ),
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
   }
 }
 
 class DesignerContainer extends StatelessWidget {
   const DesignerContainer({
-    Key key,
-    @required this.child,
-    @required this.isLeft,
+    Key? key,
+    required this.child,
+    required this.isLeft,
   }) : super(key: key);
 
   final Widget child;
@@ -1280,55 +1024,55 @@ class DesignerContainer extends StatelessWidget {
 
 class TopNBottomBackground extends StatelessWidget {
   const TopNBottomBackground({
-    Key key,
-    @required this.size,
+    Key? key,
+    required this.size,
     this.color,
     this.isTop,
   }) : super(key: key);
 
-  final Size size;
-  final Color color;
-  final bool isTop;
+  final Size? size;
+  final Color? color;
+  final bool? isTop;
   @override
   Widget build(BuildContext context) {
-    return isTop
+    return isTop!
         ? Positioned(
             top: 0,
             left: 0,
-            width: size.width,
-            height: size.height * 0.15,
+            width: size!.width,
+            height: size!.height * 0.15,
             child: ClipRRect(
               borderRadius: BorderRadius.only(
                 bottomRight:
-                    Radius.circular(SizeConfig.height(size.height / 2)),
-                bottomLeft: Radius.circular(SizeConfig.height(size.height / 2)),
+                    Radius.circular(SizeConfig.height(size!.height / 2)),
+                bottomLeft: Radius.circular(SizeConfig.height(size!.height / 2)),
               ),
-              child: ColoredBox(color: color),
+              child: ColoredBox(color: color!),
             ))
         : Positioned(
             left: 0,
             bottom: 0,
-            width: size.width,
-            height: size.height * 0.15,
+            width: size!.width,
+            height: size!.height * 0.15,
             child: ClipRRect(
               borderRadius: BorderRadius.only(
-                topRight: Radius.circular(SizeConfig.height(size.height / 2)),
-                topLeft: Radius.circular(SizeConfig.height(size.height / 2)),
+                topRight: Radius.circular(SizeConfig.height(size!.height / 2)),
+                topLeft: Radius.circular(SizeConfig.height(size!.height / 2)),
               ),
-              child: ColoredBox(color: color),
+              child: ColoredBox(color: color!),
             ));
   }
 }
 
 class CustomHeader1 extends StatelessWidget {
   const CustomHeader1({
-    Key key,
+    Key? key,
     this.headerText,
     this.imagePath,
     this.descriptionText,
   }) : super(key: key);
 
-  final String headerText, imagePath, descriptionText;
+  final String? headerText, imagePath, descriptionText;
 
   @override
   Widget build(BuildContext context) {
@@ -1355,17 +1099,17 @@ class CustomHeader1 extends StatelessWidget {
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: <Widget>[
                   Text(
-                    headerText,
+                    headerText!,
                     style: Theme.of(context)
                         .textTheme
-                        .bodyText1
+                        .bodyText1!
                         .copyWith(color: Colors.white),
                   ),
                   SizedBox(
                     width: 1.93 * SizeConfig.widthMultiplier,
                   ),
                   CircleAvatar(
-                    backgroundImage: NetworkImage(imagePath),
+                    backgroundImage: NetworkImage(imagePath!),
                   ),
                 ],
               ),
@@ -1375,11 +1119,11 @@ class CustomHeader1 extends StatelessWidget {
             height: 2 * SizeConfig.heightMultiplier,
           ),
           Text(
-            descriptionText,
+            descriptionText!,
             textAlign: TextAlign.center,
             style: Theme.of(context)
                 .textTheme
-                .subtitle1
+                .subtitle1!
                 .copyWith(color: Colors.white),
           ),
         ],
@@ -1390,13 +1134,13 @@ class CustomHeader1 extends StatelessWidget {
 
 class AppStoreAppsItemWidget1 extends StatelessWidget {
   const AppStoreAppsItemWidget1({
-    Key key,
+    Key? key,
     this.imageUrl,
     this.appUrl,
     this.appTitle,
   }) : super(key: key);
 
-  final String imageUrl, appUrl, appTitle;
+  final String? imageUrl, appUrl, appTitle;
 
   @override
   Widget build(BuildContext context) {
@@ -1412,7 +1156,7 @@ class AppStoreAppsItemWidget1 extends StatelessWidget {
               child: CachedNetworkImage(
                 height: SizeConfig.height(80),
                 width: SizeConfig.width(80),
-                imageUrl: imageUrl,
+                imageUrl: imageUrl!,
                 placeholder: (context, url) =>
                     const CircularProgressIndicator(),
                 errorWidget: (context, url, error) => const Icon(Icons.error),
@@ -1422,16 +1166,16 @@ class AppStoreAppsItemWidget1 extends StatelessWidget {
             ),
           ),
           Text(
-            appTitle,
+            appTitle!,
             style: Theme.of(context)
                 .textTheme
-                .bodyText1
+                .bodyText1!
                 .copyWith(fontWeight: FontWeight.bold),
           ),
         ],
       ),
       onTap: () {
-        launch(appUrl);
+        launch(appUrl!);
       },
     );
   }

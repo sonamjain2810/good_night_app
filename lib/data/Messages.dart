@@ -701,7 +701,7 @@ class Messages{
 
       ];
 
-      static const italian_data = [
+      static const italy_data = [
         //italian
         
   "Buona Notte. Non dormire mai senza un sogno, altrimenti ti sveglierai senza un motivo."
@@ -1255,7 +1255,7 @@ class Messages{
 
       ];
 
-      static const portuguese_data = [
+      static const portugal_data = [
         // portuguese
 
 

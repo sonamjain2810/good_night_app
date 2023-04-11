@@ -1,24 +1,23 @@
-import 'package:good_night_app/utils/SizeConfig.dart';
-
+import '/utils/SizeConfig.dart';
 import 'package:flutter/material.dart';
 
 class QuotesDesign3 extends StatelessWidget {
   const QuotesDesign3({
-    Key key,
-    @required this.size,
-    @required this.color,
-    @required this.bodyText,
-    @required this.footerText,
-    @required this.curvedBorder,
-    this.ontap,
-    this.borderColor,
+    Key? key,
+    required this.size,
+    required this.color,
+    required this.bodyText,
+    required this.footerText,
+    required this.curvedBorder,
+    
+    
   }) : super(key: key);
 
   final Size size;
   final Color color;
-  final Color borderColor;
+  
   final String bodyText, footerText;
-  final Function ontap;
+  
   final bool curvedBorder;
 
   @override
@@ -62,7 +61,7 @@ class QuotesDesign3 extends StatelessWidget {
                       Spacer(),
                       Text(
                         footerText,
-                        style: Theme.of(context).textTheme.bodyText1.copyWith(
+                        style: Theme.of(context).textTheme.bodyText1!.copyWith(
                               color: Theme.of(context).primaryIconTheme.color,
                               fontWeight: FontWeight.bold,
                             ),
@@ -91,7 +90,7 @@ class QuotesDesign3 extends StatelessWidget {
           ],
         ),
       ),
-      onTap: ontap,
+      
     );
   }
 }

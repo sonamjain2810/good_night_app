@@ -1,26 +1,24 @@
 // Ganesh Chaturathi Make Meme or Greetings Design
 
-
 import 'package:cached_network_image/cached_network_image.dart';
-import 'package:good_night_app/utils/SizeConfig.dart';
-
+import '/utils/SizeConfig.dart';
 import 'package:flutter/material.dart';
 
 class CustomBannerWidget2 extends StatelessWidget {
   const CustomBannerWidget2({
-    Key key,
-    @required this.size,
-    @required this.imagePath,
-    @required this.topText,
-    @required this.middleText,
-    @required this.bottomText,
-    @required this.buttonText,
-    this.ontap,
+    Key? key,
+    required this.size,
+    required this.imagePath,
+    required this.topText,
+    required this.middleText,
+    required this.bottomText,
+    required this.buttonText,
+    
   }) : super(key: key);
 
   final Size size;
   final String imagePath, topText, middleText, bottomText, buttonText;
-  final Function ontap;
+  
 
   @override
   Widget build(BuildContext context) {
@@ -66,7 +64,7 @@ class CustomBannerWidget2 extends StatelessWidget {
                             Text(topText,
                                 style: Theme.of(context)
                                     .textTheme
-                                    .bodyText1
+                                    .bodyText1!
                                     .copyWith(
                                         fontWeight: FontWeight.bold,
                                         color: Colors.white),
@@ -75,7 +73,7 @@ class CustomBannerWidget2 extends StatelessWidget {
                               middleText,
                               style: Theme.of(context)
                                   .textTheme
-                                  .headline1
+                                  .headline1!
                                   .copyWith(
                                       fontWeight: FontWeight.bold,
                                       color: Colors.white),
@@ -84,7 +82,7 @@ class CustomBannerWidget2 extends StatelessWidget {
                             Text(bottomText,
                                 style: Theme.of(context)
                                     .textTheme
-                                    .subtitle1
+                                    .subtitle1!
                                     .copyWith(
                                         fontWeight: FontWeight.bold,
                                         color: Colors.white),
@@ -101,7 +99,7 @@ class CustomBannerWidget2 extends StatelessWidget {
                                     buttonText,
                                     style: Theme.of(context)
                                         .textTheme
-                                        .bodyText2
+                                        .bodyText2!
                                         .copyWith(color: Colors.white),
                                   ),
                                   Padding(
@@ -124,7 +122,7 @@ class CustomBannerWidget2 extends StatelessWidget {
               ],
             ),
           ),
-          onTap: ontap,
+          
         );
       },
     );

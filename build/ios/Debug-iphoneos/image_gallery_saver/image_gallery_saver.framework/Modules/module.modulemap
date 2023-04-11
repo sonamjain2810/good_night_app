@@ -6,6 +6,6 @@ framework module image_gallery_saver {
 }
 
 module image_gallery_saver.Swift {
-    header "image_gallery_saver-Swift.h"
-    requires objc
+  header "image_gallery_saver-Swift.h"
+  requires objc
 }

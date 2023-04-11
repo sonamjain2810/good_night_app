@@ -6,6 +6,6 @@ framework module facebook_app_events {
 }
 
 module facebook_app_events.Swift {
-    header "facebook_app_events-Swift.h"
-    requires objc
+  header "facebook_app_events-Swift.h"
+  requires objc
 }

@@ -8,20 +8,18 @@ import 'RatingWidget.dart';
 
 class CustomGridItemBook extends StatelessWidget {
   const CustomGridItemBook({
-    Key key,
-    @required this.size,
-    @required this.title,
-    @required this.subtitle,
-    @required this.lightButtonText,
-    @required this.darkButtonText,
-    @required this.url,
-    @required this.rating,
-    this.ontap,
+    Key? key,
+    required this.size,
+    required this.title,
+    required this.subtitle,
+    required this.lightButtonText,
+    required this.darkButtonText,
+    required this.url,
+    required this.rating,
   }) : super(key: key);
 
   final Size size;
   final String title, subtitle, rating, lightButtonText, darkButtonText;
-  final Function ontap;
   final String url;
 
   @override
@@ -96,7 +94,7 @@ class CustomGridItemBook extends StatelessWidget {
                               text: TextSpan(
                             style: Theme.of(context)
                                 .textTheme
-                                .bodyText1
+                                .bodyText1!
                                 .copyWith(fontWeight: FontWeight.bold),
                             children: [
                               TextSpan(text: title),
@@ -155,7 +153,7 @@ class CustomGridItemBook extends StatelessWidget {
           },
         ),
       ),
-      onTap: ontap,
+    
     );
   }
 }

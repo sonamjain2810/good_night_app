@@ -1,18 +1,17 @@
-import 'package:good_night_app/utils/SizeConfig.dart';
-
+import '/utils/SizeConfig.dart';
 import 'package:flutter/material.dart';
 
 class ImageTextHorizontalWidget2 extends StatelessWidget {
   const ImageTextHorizontalWidget2({
-    Key key,
-    @required this.context,
-    @required this.imageUrl,
-    @required this.title,
-    @required this.subTitle,
+    Key? key,
+    required this.context,
+    required this.imageUrl,
+    required this.title,
+    required this.subTitle,
   }) : super(key: key);
 
   final BuildContext context;
-  final String imageUrl,title,subTitle;
+  final String imageUrl, title, subTitle;
 
   @override
   Widget build(BuildContext context) {
@@ -23,10 +22,11 @@ class ImageTextHorizontalWidget2 extends StatelessWidget {
           Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: <Widget>[
-              Text(title,
-                  maxLines: 2, 
-                  style: Theme.of(context).textTheme.headline1,
-                  ),
+              Text(
+                title,
+                maxLines: 2,
+                style: Theme.of(context).textTheme.headline1,
+              ),
               SizedBox(
                 height: 1.12 * SizeConfig.heightMultiplier,
               ),
@@ -52,8 +52,6 @@ class ImageTextHorizontalWidget2 extends StatelessWidget {
                   BorderRadius.circular(2.23 * SizeConfig.heightMultiplier),
             ),
           ),
-          
-          
         ],
       ),
     );
